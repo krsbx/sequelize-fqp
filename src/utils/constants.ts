@@ -1,0 +1,21 @@
+import { Op } from 'sequelize';
+
+export const OPERATOR: Record<string, symbol> = {
+  '<': Op.lt,
+  '<=': Op.lte,
+  '>': Op.gt,
+  '>=': Op.gte,
+  '=': Op.eq,
+  IN: Op.in,
+  'NOT IN': Op.notIn,
+  SW: Op.startsWith,
+  'STARTS WITH': Op.startsWith,
+  EW: Op.endsWith,
+  'ENDS WITH': Op.endsWith,
+  CONTAINS: Op.like,
+};
+
+export const CONDITION: Record<string, symbol> = {
+  AND: Op.and,
+  OR: Op.or,
+};
