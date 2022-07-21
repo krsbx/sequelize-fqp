@@ -1,9 +1,26 @@
-describe('Sequelize Filter Query Parser', () => {
-  it.todo('It can accept empty filter');
+import sequelizeFQP from '../src';
+import { FILTERS, NESTED_FILTER, SINGLE_FILTER } from './constants';
 
-  it.todo('It can parse single filter');
+describe('Sequelize Filter Query Parser', () => {
+  it('It can accept empty filter', () => {
+    const filter = '';
+
+    const result = sequelizeFQP(filter);
+
+    expect(result).toEqual({});
+  });
+
+  it('It can parse single filter', () => {
+    const result = sequelizeFQP(FILTERS.SINGLE);
+
+    expect(result).toEqual(SINGLE_FILTER);
+  });
 
   it.todo('It can parse multiple filter');
 
-  it.todo('It can parse nested filter');
+  it('It can parse nested filter', () => {
+    const result = sequelizeFQP(FILTERS.NESTED);
+
+    expect(result).toMatchObject<typeof NESTED_FILTER>(NESTED_FILTER);
+  });
 });

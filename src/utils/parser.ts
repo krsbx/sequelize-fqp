@@ -4,10 +4,10 @@ import { Sequelize } from 'sequelize';
 import type { Parser } from 'filter-query-parser';
 import { CONDITION, OPERATOR } from './constants';
 import { checkIsNested } from './common';
+import { AnyRecord } from './interface';
 
 export const extractFilters = (fqp: Parser) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: Record<string, any> = {};
+  const result: AnyRecord = {};
   const { condition, rules } = fqp;
 
   rules.forEach((rule) => {
@@ -44,11 +44,8 @@ export const extractFilters = (fqp: Parser) => {
   return result;
 };
 
-export const parseFilterToRules = (
-  filters: ReturnType<typeof extractFilters>
-) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let allRule: Record<string, any> = {};
+export const parseFilterToRules = (filters: AnyRecord) => {
+  let allRule: AnyRecord = {};
 
   // Take the first key of the object => filter condition
   const condition = _.keys(filters)[0] as string;

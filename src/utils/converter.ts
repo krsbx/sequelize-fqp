@@ -1,13 +1,10 @@
 import _ from 'lodash';
 import { checkIsNested } from './common';
 import { CONDITION } from './constants';
+import { AnyRecord } from './interface';
 
-export const convertFilter = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filters: Record<string, any>
-) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let allRule: Record<string, any> = {};
+export const convertFilter = (filters: AnyRecord) => {
+  let allRule: AnyRecord = {};
 
   // Take the first key of the object => filter condition
   const condition = _.keys(filters)[0] as string;
@@ -16,8 +13,7 @@ export const convertFilter = (
   const isNested = checkIsNested(_.keys(filters[condition]));
 
   _.forEach(filters, (filter, key) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rules: Record<string, any> = {};
+    const rules: AnyRecord = {};
 
     if (isNested) {
       if (!allRule[condition]) {
@@ -53,4 +49,38 @@ export const convertFilter = (
   });
 
   return allRule;
+};
+
+export const convertFilterCondition = (filters: AnyRecord) => {
+  // Take the first key of the object => filter condition
+  const condition = _.keys(filters)[0] as string;
+
+  // isNested => true if it contains AND or OR more than 1
+  const isNested = checkIsNested(_.keys(filters[condition]));
+
+  _.forEach(filters, (filter, key) => {
+    if (isNested) {
+      const filterCond = CONDITION[condition];
+
+      Object.assign(filters, {
+        [filterCond]: [{ ...convertFilterCondition(filter) }],
+      });
+      delete filters[condition];
+
+      return;
+    }
+
+    if (_.includes(_.keys(CONDITION), key)) {
+      const filterCond = CONDITION[key];
+
+      Object.assign(filters, {
+        [filterCond]: convertFilterCondition(filter),
+      });
+      delete filters[key];
+
+      return;
+    }
+  });
+
+  return filters;
 };

@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import { CONDITION, OPERATOR } from '../src/utils/constants';
 
 // Contains the result of the test.
@@ -7,17 +8,17 @@ export const SINGLE_FILTER = {
   [CONDITION.OR]: [
     {
       firstname: {
-        [OPERATOR.CONTAINS]: `%f%`,
+        [OPERATOR.CONTAINS]: `%name%`,
       },
     },
     {
       middlename: {
-        [OPERATOR.CONTAINS]: `%f%`,
+        [OPERATOR.CONTAINS]: `%name%`,
       },
     },
     {
       surname: {
-        [OPERATOR.CONTAINS]: `%f%`,
+        [OPERATOR.CONTAINS]: `%name%`,
       },
     },
   ],
@@ -30,8 +31,8 @@ export const MULTIPLE_FILTER = {
       status: {
         '!=': 'deleted',
       },
+      ...SINGLE_FILTER,
     },
-    SINGLE_FILTER,
   ],
 };
 
@@ -39,24 +40,29 @@ export const MULTIPLE_FILTER = {
 export const NESTED_FILTER = {
   [CONDITION.AND]: [
     {
-      status: {
-        '!=': 'deleted',
-      },
-    },
-    {
-      createdAt: {
-        attribute: {
-          args: [
-            {
-              col: 'createdAt',
-            },
-          ],
-          fn: 'Date',
+      ...SINGLE_FILTER,
+      [CONDITION.AND]: [
+        {
+          status: {
+            '!=': 'deleted',
+          },
         },
-        comparator: OPERATOR['>'],
-        logic: '2020-01-01',
-      },
+        {
+          createdAt: Sequelize.where(
+            Sequelize.fn('Date', Sequelize.col('createdAt')),
+            String(OPERATOR['>']),
+            '2020-01-01'
+          ),
+        },
+      ],
     },
-    SINGLE_FILTER,
   ],
+};
+
+export const FILTERS = {
+  SINGLE:
+    'firstname contains "name" or middlename contains "name" or surname contains "name"',
+  MULTIPLE: '',
+  NESTED:
+    '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted" AND createdAt > "2020-01-01"',
 };
