@@ -1,16 +1,21 @@
 {
-  "name": "sequelize-filter-query-parser",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@krsbx/sequelize-fqp",
+  "version": "0.1.0",
+  "description": "Filter Query Parser for Sequelize ORM",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon src/index.ts",
     "prepare": "husky install",
     "test": "jest --watchAll --verbose"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "krsbx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/krsbx/sequelize-fqp/issues"
+  },
+  "homepage": "https://github.com/krsbx/sequelize-fqp#readme",
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
