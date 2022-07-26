@@ -4,9 +4,9 @@ import { Sequelize } from 'sequelize';
 import type { Parser } from 'filter-query-parser';
 import { CONDITION, OPERATOR } from './constants';
 import { checkIsNested } from './common';
-import { AnyRecord } from './interface';
+import { AnyRecord, Options } from './interface';
 
-export const extractFilters = (fqp: Parser) => {
+export const extractFilters = (fqp: Parser, options: Options = {}) => {
   const result: AnyRecord = {};
   const { condition, rules } = fqp;
 
@@ -15,17 +15,21 @@ export const extractFilters = (fqp: Parser) => {
     if (!rule.field) {
       return (result[condition] = {
         ...result[condition],
-        ...extractFilters(rule as unknown as Parser),
+        ...extractFilters(rule as unknown as Parser, options),
       });
     }
 
     const { field, operator } = rule;
-    const isDate = moment(rule.value?.toString(), 'YYYY-MM-DD', true).isValid();
+    const isDate = moment(String(rule.value), 'YYYY-MM-DD', true).isValid();
 
     const op = operator.toUpperCase();
-    const opr = OPERATOR[op] ?? op;
+    let opr = OPERATOR[op] ?? op;
 
     if (OPERATOR[op] && OPERATOR[op] === OPERATOR.CONTAINS) {
+      if (!options.caseSensitive) {
+        opr = OPERATOR['CONTAINS %'];
+      }
+
       rule.value = `%${String(rule.value)}%`;
     }
 
@@ -73,17 +77,15 @@ export const parseFilterToRules = (filters: AnyRecord) => {
 
     allRule = {
       ...allRule,
-      [key]: {
-        ...(filter.isDate
-          ? Sequelize.where(
-              Sequelize.fn('Date', Sequelize.col(key)),
-              validOp,
-              value
-            )
-          : {
-              [validOp]: value,
-            }),
-      },
+      [key]: filter.isDate
+        ? Sequelize.where(
+            Sequelize.fn('Date', Sequelize.col(key)),
+            validOp,
+            value
+          )
+        : {
+            [validOp]: value,
+          },
     };
   });
 

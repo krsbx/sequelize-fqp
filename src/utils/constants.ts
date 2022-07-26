@@ -14,6 +14,7 @@ export const OPERATOR: Record<string, symbol> = {
   EW: Op.endsWith,
   'ENDS WITH': Op.endsWith,
   CONTAINS: Op.like,
+  'CONTAINS %': Op.iLike,
 };
 
 export const CONDITION: Record<string, symbol> = {
