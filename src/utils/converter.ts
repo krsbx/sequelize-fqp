@@ -1,86 +1,46 @@
 import _ from 'lodash';
-import { checkIsNested } from './common';
-import { CONDITION } from './constants';
+import { getFilterType } from './common';
+import { CONDITION, FILTER_TYPE } from './constants';
+import {
+  convertMultipleFilter,
+  convertMultipleFilterCondition,
+} from './converter/multiple';
+import {
+  convertSingleNestedFilter,
+  convertSingleNestedFilterCondition,
+} from './converter/singleNested';
 import { AnyRecord } from './interface';
 
 export const convertFilter = (filters: AnyRecord) => {
-  let allRule: AnyRecord = {};
+  const condition = Object.keys(filters)[0];
 
-  // Take the first key of the object => filter condition
-  const condition = _.keys(filters)[0] as string;
+  const filterType = getFilterType(_.keys(filters[condition]));
 
-  // isNested => true if it contains AND or OR more than 1
-  const isNested = checkIsNested(_.keys(filters[condition]));
+  const isNested = filterType === FILTER_TYPE.NESTED;
 
-  _.forEach(filters, (filter, key) => {
-    const rules: AnyRecord = {};
+  if (filterType !== FILTER_TYPE.MULTIPLE) {
+    return convertSingleNestedFilter(filters, isNested);
+  }
 
-    if (isNested) {
-      if (!allRule[condition]) {
-        allRule[condition] = {};
-      }
-
-      allRule[condition] = {
-        ...allRule[condition],
-        ...convertFilter(filter),
-      };
-
-      return;
-    }
-
-    if (_.includes(_.keys(CONDITION), key)) {
-      rules[key] = _.values(convertFilter(filter));
-      allRule = {
-        ...allRule,
-        ...rules,
-      };
-
-      return;
-    }
-
-    rules[key] = {
-      [key]: filter,
-    };
-
-    allRule = {
-      ...allRule,
-      ...rules,
-    };
-  });
-
-  return allRule;
+  return {
+    [condition]: convertMultipleFilter(filters[condition]),
+  };
 };
 
 export const convertFilterCondition = (filters: AnyRecord) => {
-  // Take the first key of the object => filter condition
-  const condition = _.keys(filters)[0] as string;
+  const condition = Object.keys(filters)[0];
 
-  // isNested => true if it contains AND or OR more than 1
-  const isNested = checkIsNested(_.keys(filters[condition]));
+  const filterType = getFilterType(_.keys(filters[condition]));
 
-  _.forEach(filters, (filter, key) => {
-    if (isNested) {
-      const filterCond = CONDITION[condition];
+  const isNested = filterType === FILTER_TYPE.NESTED;
 
-      Object.assign(filters, {
-        [filterCond]: [{ ...convertFilterCondition(filter) }],
-      });
-      delete filters[condition];
+  if (filterType !== FILTER_TYPE.MULTIPLE) {
+    return convertSingleNestedFilterCondition(filters, isNested);
+  }
 
-      return;
-    }
+  const filterCond = CONDITION[condition];
 
-    if (_.includes(_.keys(CONDITION), key)) {
-      const filterCond = CONDITION[key];
-
-      Object.assign(filters, {
-        [filterCond]: convertFilterCondition(filter),
-      });
-      delete filters[key];
-
-      return;
-    }
-  });
-
-  return filters;
+  return {
+    [filterCond]: [{ ...convertMultipleFilterCondition(filters[condition]) }],
+  };
 };

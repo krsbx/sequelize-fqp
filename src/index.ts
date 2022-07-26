@@ -10,4 +10,4 @@ const sequelizeFQP = (filters: string) => {
   return parser(fqpParse);
 };
 
-export default sequelizeFQP;
+export = sequelizeFQP;

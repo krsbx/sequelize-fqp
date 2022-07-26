@@ -6,6 +6,7 @@ export const OPERATOR: Record<string, symbol> = {
   '>': Op.gt,
   '>=': Op.gte,
   '=': Op.eq,
+  '!=': Op.ne,
   IN: Op.in,
   'NOT IN': Op.notIn,
   SW: Op.startsWith,
@@ -18,4 +19,10 @@ export const OPERATOR: Record<string, symbol> = {
 export const CONDITION: Record<string, symbol> = {
   AND: Op.and,
   OR: Op.or,
+};
+
+export const FILTER_TYPE = {
+  SINGLE: 'single',
+  MULTIPLE: 'multiple',
+  NESTED: 'nested',
 };
