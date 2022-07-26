@@ -8,17 +8,17 @@ export const SINGLE_FILTER = {
   [CONDITION.OR]: [
     {
       firstname: {
-        [OPERATOR.CONTAINS]: `%name%`,
+        [OPERATOR['CONTAINS %']]: `%name%`,
       },
     },
     {
       middlename: {
-        [OPERATOR.CONTAINS]: `%name%`,
+        [OPERATOR['CONTAINS %']]: `%name%`,
       },
     },
     {
       surname: {
-        [OPERATOR.CONTAINS]: `%name%`,
+        [OPERATOR['CONTAINS %']]: `%name%`,
       },
     },
   ],
@@ -50,7 +50,7 @@ export const NESTED_FILTER = {
         {
           createdAt: Sequelize.where(
             Sequelize.fn('Date', Sequelize.col('createdAt')),
-            String(OPERATOR['>']),
+            OPERATOR['>'] as unknown as string,
             '2020-01-01'
           ),
         },

@@ -30,6 +30,6 @@ describe('Sequelize Filter Query Parser', () => {
   it('It can parse nested filter', () => {
     const result = sequelizeFQP(FILTERS.NESTED);
 
-    expect(result).toMatchObject<typeof NESTED_FILTER>(NESTED_FILTER);
+    expect(result).toEqual(NESTED_FILTER);
   });
 });
