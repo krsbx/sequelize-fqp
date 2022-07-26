@@ -29,7 +29,7 @@ export const MULTIPLE_FILTER = {
   [CONDITION.AND]: [
     {
       status: {
-        '!=': 'deleted',
+        [OPERATOR['!=']]: 'deleted',
       },
       ...SINGLE_FILTER,
     },
@@ -44,7 +44,7 @@ export const NESTED_FILTER = {
       [CONDITION.AND]: [
         {
           status: {
-            '!=': 'deleted',
+            [OPERATOR['!=']]: 'deleted',
           },
         },
         {
@@ -62,7 +62,8 @@ export const NESTED_FILTER = {
 export const FILTERS = {
   SINGLE:
     'firstname contains "name" or middlename contains "name" or surname contains "name"',
-  MULTIPLE: '',
+  MULTIPLE:
+    '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted"',
   NESTED:
     '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted" AND createdAt > "2020-01-01"',
 };
