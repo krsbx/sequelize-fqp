@@ -2,8 +2,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Sequelize } from 'sequelize';
 import type { Parser } from 'filter-query-parser';
-import { CONDITION, OPERATOR } from './constants';
-import { checkIsNested } from './common';
+import { CONDITION } from './constants';
+import { checkIsNested, convertFilterValue } from './common';
 import { AnyRecord, Options } from './interface';
 
 export const extractFilters = (fqp: Parser, options: Options = {}) => {
@@ -19,27 +19,18 @@ export const extractFilters = (fqp: Parser, options: Options = {}) => {
       });
     }
 
-    const { field, operator } = rule;
+    const { field } = rule;
     const isDate = moment(String(rule.value), 'YYYY-MM-DD', true).isValid();
 
-    const op = operator.toUpperCase();
-    let opr = OPERATOR[op] ?? op;
-
-    if (OPERATOR[op] && OPERATOR[op] === OPERATOR.CONTAINS) {
-      if (!options.caseSensitive) {
-        opr = OPERATOR['CONTAINS %'];
-      }
-
-      rule.value = `%${String(rule.value)}%`;
-    }
+    const { operation, value } = convertFilterValue(rule, options);
 
     result[condition] = {
       ...result[condition],
       [field]: {
         ...result[condition]?.[field],
         field,
-        value: rule.value,
-        operation: opr,
+        value,
+        operation,
         isDate,
       },
     };
