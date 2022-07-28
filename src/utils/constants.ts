@@ -15,6 +15,13 @@ export const OPERATOR: Record<string, symbol> = {
   'ENDS WITH': Op.endsWith,
   CONTAINS: Op.like,
   'CONTAINS %': Op.iLike,
+  NULL: Op.is,
+  'NOT NULL': Op.ne,
+  'DOES NOT CONTAIN': Op.notLike,
+  'DOES NOT CONTAIN %': Op.notILike,
+  BETWEEN: Op.between,
+  'NOT BETWEEN': Op.notBetween,
+  'EXACTLY MATCHES': Op.eq,
 };
 
 export const CONDITION: Record<string, symbol> = {
