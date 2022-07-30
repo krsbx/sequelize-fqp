@@ -59,6 +59,49 @@ export const NESTED_FILTER = {
   ],
 };
 
+//   It can parse null filter
+export const NULL_FILTER = {
+  [CONDITION.AND]: [
+    {
+      username: {
+        [OPERATOR['NULL']]: null,
+      },
+    },
+  ],
+};
+
+//   It can parse not null filter
+export const NOT_NULL_FILTER = {
+  [CONDITION.AND]: [
+    {
+      username: {
+        [OPERATOR['NOT NULL']]: null,
+      },
+    },
+  ],
+};
+
+//   It can parse between filter
+export const BETWEEN = {
+  [CONDITION.AND]: [
+    {
+      id: {
+        [OPERATOR.BETWEEN]: [1, 10],
+      },
+    },
+  ],
+};
+
+export const NOT_BETWEEN = {
+  [CONDITION.AND]: [
+    {
+      id: {
+        [OPERATOR['NOT BETWEEN']]: [1, 10],
+      },
+    },
+  ],
+};
+
 export const FILTERS = {
   SINGLE:
     'firstname contains "name" or middlename contains "name" or surname contains "name"',
@@ -66,4 +109,8 @@ export const FILTERS = {
     '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted"',
   NESTED:
     '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted" AND createdAt > "2020-01-01"',
+  NULL: 'username NULL',
+  NOT_NULL: 'username NOT NULL',
+  BETWEEN: 'id between (1,10)',
+  NOT_BETWEEN: 'id not between (1,10)',
 };
