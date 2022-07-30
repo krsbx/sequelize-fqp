@@ -1,6 +1,6 @@
 {
   "name": "@krsbx/sequelize-fqp",
-  "version": "0.1.0a",
+  "version": "0.1.1",
   "description": "Filter Query Parser for Sequelize ORM",
   "main": "dist/index.js",
   "scripts": {
