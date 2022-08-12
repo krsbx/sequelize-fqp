@@ -27,11 +27,11 @@ export const SINGLE_FILTER = {
 //   It can parse multiple filter
 export const MULTIPLE_FILTER = {
   [CONDITION.AND]: [
+    { ...SINGLE_FILTER },
     {
       status: {
         [OPERATOR['!=']]: 'deleted',
       },
-      ...SINGLE_FILTER,
     },
   ],
 };
@@ -39,8 +39,8 @@ export const MULTIPLE_FILTER = {
 //   It can parse nested filter
 export const NESTED_FILTER = {
   [CONDITION.AND]: [
+    { ...SINGLE_FILTER },
     {
-      ...SINGLE_FILTER,
       [CONDITION.AND]: [
         {
           status: {
@@ -106,11 +106,11 @@ export const FILTERS = {
   SINGLE:
     'firstname contains "name" or middlename contains "name" or surname contains "name"',
   MULTIPLE:
-    '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted"',
+    '(firstname contains "name" or middlename contains "name" or surname contains "name") and status != "deleted"',
   NESTED:
-    '(firstname contains "name" OR middlename contains "name" OR surname contains "name") AND status != "deleted" AND createdAt > "2020-01-01"',
-  NULL: 'username NULL',
-  NOT_NULL: 'username NOT NULL',
+    '(firstname contains "name" or middlename contains "name" or surname contains "name") and status != "deleted" and createdAt > "2020-01-01"',
+  NULL: 'username null',
+  NOT_NULL: 'username not null',
   BETWEEN: 'id between (1,10)',
   NOT_BETWEEN: 'id not between (1,10)',
 };

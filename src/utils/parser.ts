@@ -1,84 +1,40 @@
 import _ from 'lodash';
-import moment from 'moment';
 import { Sequelize } from 'sequelize';
-import type { Parser } from 'filter-query-parser';
+import type { Parser, Rule } from 'filter-query-parser';
+import { convertFilter } from './converter';
 import { CONDITION } from './constants';
-import { checkIsNested, convertFilterValue } from './common';
-import { AnyRecord, Options } from './interface';
+import { Options } from './interface';
 
-export const extractFilters = (fqp: Parser, options: Options = {}) => {
-  const result: AnyRecord = {};
-  const { condition, rules } = fqp;
+export const extractFilters = (
+  rules: Rule[] | Parser[],
+  options: Options = {}
+) => {
+  const validRules: { [x: string | symbol | number]: Rule['value'] }[] = [];
 
-  rules.forEach((rule) => {
-    // If its a new Parser fields
-    if (!rule.field) {
-      return (result[condition] = {
-        ...result[condition],
-        ...extractFilters(rule as unknown as Parser, options),
+  _.forEach(rules, (rule) => {
+    if ((rule as Parser)?.condition) {
+      const condition = CONDITION[(rule as Parser).condition];
+
+      validRules.push({
+        [condition]: extractFilters((rule as Parser).rules, options),
+      });
+    } else {
+      const field = (rule as Rule).field;
+      const { operation, value, isDate } = convertFilter(rule as Rule, options);
+
+      validRules.push({
+        [field]: isDate
+          ? Sequelize.where(
+              Sequelize.fn('Date', Sequelize.col(field)),
+              operation as unknown as string,
+              value
+            )
+          : {
+              [operation]: value,
+            },
       });
     }
-
-    const { field } = rule;
-    const isDate = moment(String(rule.value), 'YYYY-MM-DD', true).isValid();
-
-    const { operation, value } = convertFilterValue(rule, options);
-
-    result[condition] = {
-      ...result[condition],
-      [field]: {
-        ...result[condition]?.[field],
-        field,
-        value,
-        operation,
-        isDate,
-      },
-    };
   });
 
-  return result;
-};
-
-export const parseFilterToRules = (filters: AnyRecord) => {
-  let allRule: AnyRecord = {};
-
-  // Take the first key of the object => filter condition
-  const condition = _.keys(filters)[0] as string;
-
-  // isNested => true if it contains AND or OR more than 1
-  const isNested = checkIsNested(_.keys(filters[condition]));
-
-  _.forEach(filters, (filter, key) => {
-    if (isNested) {
-      if (!allRule[condition]) {
-        allRule[condition] = {};
-      }
-
-      allRule[condition] = parseFilterToRules(filter);
-      return;
-    }
-
-    if (_.includes(_.keys(CONDITION), key)) {
-      allRule[key] = parseFilterToRules(filter);
-      return;
-    }
-
-    const validOp = filter.operation;
-    const value = filter.value;
-
-    allRule = {
-      ...allRule,
-      [key]: filter.isDate
-        ? Sequelize.where(
-            Sequelize.fn('Date', Sequelize.col(key)),
-            validOp,
-            value
-          )
-        : {
-            [validOp]: value,
-          },
-    };
-  });
-
-  return allRule;
+  return validRules;
 };

@@ -1,15 +1,17 @@
 import type { Parser } from 'filter-query-parser';
-import { extractFilters, parseFilterToRules } from './parser';
-import { convertFilter, convertFilterCondition } from './converter';
+import { CONDITION } from './constants';
 import { Options } from './interface';
+import { extractFilters } from './parser';
 
-const fqpSequelize = (fqp: Parser, options: Options = {}) => {
-  const extractedFilter = extractFilters(fqp, options);
-  const filter = parseFilterToRules(extractedFilter);
-  const validFilter = convertFilter(filter);
-  const validFilterCondition = convertFilterCondition(validFilter);
+const sequelizeFQP = (filter: Parser, options: Options = {}) => {
+  const dbCond = CONDITION[filter.condition];
+  const parsedFilter = extractFilters(filter.rules, options);
 
-  return validFilterCondition;
+  if (!dbCond) return {};
+
+  const result = { [dbCond]: parsedFilter };
+
+  return result;
 };
 
-export default fqpSequelize;
+export default sequelizeFQP;
