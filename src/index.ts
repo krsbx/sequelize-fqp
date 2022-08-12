@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { FQP } from 'filter-query-parser';
-import parser from './utils/sequelizeFQP';
 import { Options } from './utils/interface';
+import parser from './utils/sequelizeFQP';
 
 const sequelizeFQP = (filters: string, options: Options = {}) => {
   if (_.isEmpty(filters)) return {};

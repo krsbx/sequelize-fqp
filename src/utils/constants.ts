@@ -28,9 +28,3 @@ export const CONDITION: Record<string, symbol> = {
   AND: Op.and,
   OR: Op.or,
 };
-
-export const FILTER_TYPE = {
-  SINGLE: 'single',
-  MULTIPLE: 'multiple',
-  NESTED: 'nested',
-};
