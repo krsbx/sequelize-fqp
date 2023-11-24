@@ -28,3 +28,10 @@ export const CONDITION: Record<string, symbol> = {
   AND: Op.and,
   OR: Op.or,
 };
+
+export const POSSIBLE_DATE_FORMAT = [
+  'yyyy-MM-dd',
+  'yyyy-MM-ddTHH:mm:ss',
+  'yyyy-MM-ddTHH:mm:ss.SSS',
+  'yyyy-MM-ddTHH:mm:ss.SSSZ',
+];
