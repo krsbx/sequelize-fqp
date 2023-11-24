@@ -1,14 +1,14 @@
 import type { Rule } from 'filter-query-parser';
-import moment from 'moment';
 import { OPERATOR } from './constants';
 import { Options } from './interface';
+import { isValidDate } from './common';
 
 export const convertFilter = (rule: Rule, options: Options = {}) => {
   const op = rule.operator.toUpperCase();
   let operation = OPERATOR[op] ?? op;
   let value = rule.value;
 
-  const isDate = moment(String(rule.value), 'YYYY-MM-DD', true).isValid();
+  const isDate = isValidDate(value);
 
   switch (op) {
     case 'CONTAINS':

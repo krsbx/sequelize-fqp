@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import forEach from 'lodash.foreach';
 import { Sequelize } from 'sequelize';
 import type { Parser, Rule } from 'filter-query-parser';
 import { convertFilter } from './converter';
@@ -11,7 +11,7 @@ export const extractFilters = (
 ) => {
   const validRules: { [x: string | symbol | number]: Rule['value'] }[] = [];
 
-  _.forEach(rules, (rule) => {
+  forEach(rules, (rule) => {
     if ((rule as Parser)?.condition) {
       const condition = CONDITION[(rule as Parser).condition];
 
